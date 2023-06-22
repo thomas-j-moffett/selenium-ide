@@ -1,9 +1,9 @@
 {
-  "name": "selenium-side-runner",
-  "version": "4.0.0-alpha.52",
+  "name": "selenium-side-runner-with-hooks",
+  "version": "4.0.0-alpha.48",
   "private": false,
   "description": "Run Selenium IDE projects in cli",
-  "repository": "https://github.com/SeleniumHQ/selenium-ide",
+  "repository": "https://github.com/thomas-j-moffett/selenium-ide",
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist tsconfig.tsbuildinfo node_modules",
@@ -11,7 +11,7 @@
     "watch": "tsc --watch"
   },
   "bin": {
-    "selenium-side-runner": "dist/bin.js"
+    "selenium-side-runner-with-hooks": "dist/bin.js"
   },
   "engines": {
     "node": ">=16"
