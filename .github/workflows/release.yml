@@ -3,6 +3,14 @@ name: 'Release'
 on:
   push:
     branches: [trunk]
+  workflow_dispatch:
+    #TJM: I also want this to simply run on "workflow_dispatch" in case I need to manually run it.
+    #   More info from docs:
+    #     https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
+    #     https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
+    #   More info on how to properly specify multiple events with config since that's not in Github docs.
+    #     https://github.com/orgs/community/discussions/25595#discussioncomment-3248415
+    #      
 
 jobs:
   release:
