@@ -66,3 +66,23 @@ jobs:
           prerelease: false
           files: packages/selenium-ide/dist/Selenium*
         continue-on-error: true
+    if: github.repository == 'thomas-j-moffett/selenium-ide'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install pnpm
+        run: npm i -g pnpm
+      - name: Install dependencies
+        run: pnpm -r i
+      - name: Install chromedriver for windows
+        run: npm_config_platform=win32 npm i
+        working-directory: packages/selenium-ide/node_modules/electron-chromedriver
+      - name: Build all JS
+        run: pnpm run build
+      - name: Publish SIDE runner package to npm
+        run: pnpm -r publish --no-git-checks --filter=packages/side-runner --access public --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
