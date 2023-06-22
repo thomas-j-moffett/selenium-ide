@@ -74,6 +74,21 @@ jobs:
           prerelease: false
           files: packages/selenium-ide/dist/Selenium*
         continue-on-error: true
+  release_custom:
+    permissions:
+      actions: read
+      checks: read
+      contents: write
+      deployments: read
+      issues: read
+      discussions: read
+      packages: read
+      pages: read
+      pull-requests: read
+      repository-projects: read
+      security-events: read
+      statuses: read
+    runs-on: macos-11
     if: github.repository == 'thomas-j-moffett/selenium-ide'
     steps:
       - uses: actions/checkout@v3
