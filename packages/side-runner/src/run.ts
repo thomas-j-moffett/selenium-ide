@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import glob from 'glob'
 import {
   correctPluginPaths,
   getCustomCommands,
@@ -30,7 +31,8 @@ import { SuiteShape, TestShape } from '@seleniumhq/side-model'
 import fs from 'fs/promises'
 import path from 'path'
 import Satisfies from './versioner'
-import { Configuration, Project } from './types'
+import { Configuration, CustomTestHookCollection, CustomTestHookInput, CustomTestHooks, Project } from './types'
+import { IOptions } from 'glob'
 
 export interface HoistedThings {
   configuration: Configuration
@@ -38,11 +40,89 @@ export interface HoistedThings {
 }
 
 const buildRunners = ({ configuration, logger }: HoistedThings) => {
+  const execTestHook = async (hookItems: CustomTestHookCollection, hookName: keyof CustomTestHooks, hookInput: CustomTestHookInput) => {
+    //TJM: The hookItems will be stored as a "dynamic" object of multiple items with the 
+    //     filename as the key and an object of the hook functions as the value.
+    //     This will be the way the data is stored when we load the test hooks from config.
+    //
+    let hookItemsKeys: string[] = Object.keys(hookItems)
+    await Promise.all(
+      hookItemsKeys.map(async (hookItemKey) => {
+        //TJM: Iterate over the keys to get at the custom test hooks to find the 
+        //     specified name of the one to run.
+        //     We don't care about specific file path/name since we want to
+        //     execute the hookname across all/any files where it was specified.
+        //
+        let customHookObj = hookItems[hookItemKey]
+        let customHookFunc = customHookObj?.[hookName]
+        if (customHookFunc) {
+          await customHookFunc(hookInput)
+        }
+      })
+    )
+  };
+
+  /**
+   * 
+   * @param globPattern Glob pattern for finding files
+   * @param cwd The directory to use for the current working directory (if different from process.cwd).
+   * @returns {string[]} Array of strings for the full file paths found.
+   */
+  const getCustomTestHookFiles = async (globPattern: string, cwd = '') : Promise<string[]> => {
+    //TJM: I basically gave await support to the glob function by wrapping it in a Promise.
+    return new Promise((resolve, reject) => {
+      let options: IOptions = {}
+      if(cwd) {
+        options.cwd = cwd
+      }
+
+      //TJM: We want glob to give us back the full paths, otherwise, the import will not work correctly.
+      options.realpath = true
+
+      glob(globPattern, options, function (err, files) {
+        if(err) {
+          reject(err)
+        }
+        else {
+          resolve(files)
+        }
+      })
+    });
+  }
+
+  const loadCustomTestHooks = async () : Promise<CustomTestHookCollection> => {
+    let customHooksColl: CustomTestHookCollection = {};
+    //TJM: Can't use flatMap on Promise-wrapped arrays, so use map, resolve promises, and then flatten.
+    //    Also, must check for null or we'll get error.
+    //
+    if(!configuration.testHookFiles) {
+      return customHooksColl
+    }
+    let finalFilesList: string[] = (await Promise.all(configuration.testHookFiles.map(async (filePathOrPattern) => {
+      //TJM: This will return an array, so after handling promises use "flat".
+      let hookFiles = await getCustomTestHookFiles(filePathOrPattern)
+      return hookFiles
+    }))).flat()
+
+    if(!finalFilesList) {
+      return customHooksColl
+    }
+
+    finalFilesList.forEach(async (filePath) => {
+      let customHooksFileData = await import(filePath);
+      //TJM: The data we want is stored under "default" so we can do a simple assignment.
+      customHooksColl[filePath] = customHooksFileData.default as CustomTestHooks;
+    })
+
+    return customHooksColl;
+  };
+
   const runTest = async (project: Project, test: TestShape) => {
     logger.info(`Running test ${test.name}`)
     const pluginPaths = correctPluginPaths(project.path, project.plugins)
     const plugins = await loadPlugins(pluginPaths)
     const customCommands = getCustomCommands(plugins)
+    const customTestHooks = await loadCustomTestHooks()
     const driver = new WebDriverExecutor({
       capabilities:
         configuration.capabilities as unknown as WebDriverExecutorConstructorArgs['capabilities'],
@@ -74,7 +154,7 @@ const buildRunners = ({ configuration, logger }: HoistedThings) => {
           logger,
           variables: new Variables(),
         })
-        const onComplete = async (failure: any) => {
+        const onComplete = async (failure: any, playbackLastCommandState?: PlaybackEventShapes["COMMAND_STATE_CHANGED"]) => {
           // I know this feature is over aggressive for a tool to be deprecated
           // but I can't figure out whats going wrong at {{paid work}} and I
           // need this so just please don't ask me to expand on it because I
@@ -95,8 +175,10 @@ const buildRunners = ({ configuration, logger }: HoistedThings) => {
               console.log('Failed to take screenshot', e)
             }
           }
+          await execTestHook(customTestHooks, 'onTestCompleteBeforeCleanup', { logger, project, test, webDriverExec: driver, playbackLastCommandState, sideRunnerConfig: configuration })
           await playback.cleanup()
           await driver.cleanup()
+          await execTestHook(customTestHooks, 'onTestCompleteAfterCleanup', { logger, project, test, webDriverExec: driver, playbackLastCommandState, sideRunnerConfig: configuration })
           if (failure) {
             return reject(failure)
           } else {
@@ -123,10 +205,11 @@ const buildRunners = ({ configuration, logger }: HoistedThings) => {
                 if (state !== 'finished') {
                   return onComplete(
                     playback['state'].lastSentCommandState?.error ||
-                      new Error('Unknown error')
+                      new Error('Unknown error'),
+                      playback['state'].lastSentCommandState
                   )
                 }
-                return onComplete(null)
+                return onComplete(null, playback['state'].lastSentCommandState)
             }
             return
           }
