@@ -2,7 +2,7 @@
 
 Runs exported Selenium IDE tests in command line.
 
-This fork includes capability to run custom script as hooks upon test completion. The main use case for this is to take some kind of custom action based on the result of a test. See `./packages/side-runner/src/__sample-test-with-hooks/test-hook-simple.js` and `CustomTestHookInput` in `./packages/side-runner/src/types.ts` for more info. Also, see `CustomTestHooks` in `./packages/side-runner/src/types.ts` for info on the currently supported hooks.
+This fork includes capability to run custom script as hooks upon test completion. The main use case for this is to take some kind of custom action based on the result of a test. See `./src/__sample-test-with-hooks/test-hook-simple.js` and `CustomTestHookInput` in `./src/types.ts` for more info. Also, see `CustomTestHooks` in `./src/types.ts` for info on the currently supported hooks.
 
 Currently, there is no support for prioritizing the hook files that get loaded so that hooks can run in a particular order. The way they are loaded is up to how they are found on the file system, so it could be random or possibly alphabetical in terms of the file path.
 
