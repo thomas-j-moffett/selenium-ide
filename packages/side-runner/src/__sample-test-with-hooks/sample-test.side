@@ -1,0 +1,79 @@
+{
+  "id": "f156e0c6-1891-406f-a488-9f301663ad4d",
+  "version": "2.0",
+  "name": "delinea-test-fail-test",
+  "url": "https://delinea.com",
+  "tests": [{
+    "id": "fd4416db-8c5c-4679-a82e-a975488aaa53",
+    "name": "Products > Secret Server mega menu nav test",
+    "commands": [{
+      "id": "1081f2c5-7d3a-4c68-b46b-0d294ae2bf47",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "6fc98227-6586-4e9f-9e74-a10d853ba379",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1920x1053",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c1f342ac-b659-4303-952c-6babb5a714bf",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "id=hs_cos_wrapper_mega-menu_",
+      "targets": [
+        ["id=hs_cos_wrapper_mega-menu_", "id"],
+        ["css=.three-col-sub > a > #hs_cos_wrapper_mega-menu_", "css:finder"],
+        ["xpath=//div[@id='hs_cos_wrapper_mega-menu_']", "xpath:attributes"],
+        ["xpath=//li/a/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "8e9404fd-6ad8-4115-a274-43713ba3e1df",
+      "comment": "Pause seems necessary due to inconsistent errors with the menu item to click not being found. This could be due to many things, but the pause seems to help for some reason.",
+      "command": "pause",
+      "target": "500",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "51743909-d726-4cc6-a4c4-47a01982deb4",
+      "comment": "",
+      "command": "click",
+      "target": "css=.subsubmenu-1 > li:nth-child(1) .menu-txt:nth-child(2) > .menu-desc > #hs_cos_wrapper_mega-menu_",
+      "targets": [
+        ["css=.subsubmenu-1 > li:nth-child(1) .menu-txt:nth-child(2) > .menu-desc > #hs_cos_wrapper_mega-menu_", "css:finder"],
+        ["xpath=(//div[@id='hs_cos_wrapper_mega-menu_'])[4]", "xpath:attributes"],
+        ["xpath=//div[2]/span/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "37d22647-1e1d-4eec-8ce7-2d0f5b6b7a5e",
+      "comment": "",
+      "command": "executeScript",
+      "target": "return window.location.href",
+      "targets": [],
+      "value": "pageUrl"
+    }, {
+      "id": "a78ec592-448a-4815-b062-5fab66d72e3f",
+      "comment": "Assert that we're on the correct page.",
+      "command": "assert",
+      "target": "pageUrl",
+      "targets": [],
+      "value": "https://delinea.com/products/secret-server"
+    }]
+  }],
+  "suites": [{
+    "id": "b690deee-a14e-4eac-86fe-e806cdc3d8da",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": true,
+    "timeout": 300,
+    "tests": ["fd4416db-8c5c-4679-a82e-a975488aaa53"]
+  }],
+  "urls": ["https://delinea.com/"],
+  "plugins": []
+}

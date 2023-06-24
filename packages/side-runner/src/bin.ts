@@ -92,6 +92,15 @@ program
     '-z, --screenshot-failure-directory [directory]',
     'Write screenshots of failed tests to file in specified directory. Name will be based on test + timestamp.'
   )
+  //TJM: Issue with variadic options: https://github.com/tj/commander.js/issues/913#issuecomment-461705203
+  //    I'm facing an issue with it eating the main argument since the options are first.
+  //     When using this, the *.side file can get confused with the option because of this.
+  //    But this documentation says we can have them, so it must just be a different issue??: https://www.npmjs.com/package/commander#variadic-option
+  //
+  .option(
+    '-k, --test-hook-files [filepath...]',
+    'One or more paths (separated by a space) to a JavaScript module file(s) with hooks that the runner will look for. The file paths can also be specified as globs. If relative paths are used, they should be relative to the current working directory. If this is the last option specified, the " -- " should be used to make sure that the *.side files do not accidentally get read as test hook files.'
+  )
   .option(
     '-f, --force',
     "Forcibly run the project, regardless of project's version"
@@ -119,6 +128,7 @@ let configuration: Configuration = {
   force: options.force,
   maxWorkers: os.cpus().length,
   screenshotFailureDirectory: options.screenshotFailureDirectory,
+  testHookFiles: options.testHookFiles,
   // Convert all project paths into absolute paths
   projects: [],
   proxyOptions: {},

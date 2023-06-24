@@ -1,4 +1,5 @@
-import { ProjectShape } from '@seleniumhq/side-model'
+import { ProjectShape, TestShape } from '@seleniumhq/side-model'
+import { PlaybackEventShapes, WebDriverExecutor } from '@seleniumhq/side-runtime'
 import { Command } from 'commander'
 
 export type JSON =
@@ -86,4 +87,38 @@ export type Configuration = Required<
     runId: string
     path: string
     screenshotFailureDirectory?: string
+    testHookFiles?: string[]
+  }
+
+  export type CustomTestHookInput = {
+    logger: Console
+    project: ProjectShape
+    test: TestShape
+    webDriverExec: WebDriverExecutor
+    playbackLastCommandState?: PlaybackEventShapes["COMMAND_STATE_CHANGED"]
+    sideRunnerConfig: Configuration
+  }
+
+  export interface CustomTestHooks {
+    /**
+     * This hook will be called after the test completes (regardless of status, even from error)
+     * BUT before cleanup is done, so the webdriver is still available.
+     * @param input 
+     * @returns 
+     */
+    onTestCompleteBeforeCleanup?: (input: CustomTestHookInput) => Promise<void>
+
+    /**
+     * This hook will be called after the test completes (regardless of status, even from error)
+     * AND after cleanup is done, so the webdriver is not available.
+     * @param input 
+     * @returns 
+     */
+    onTestCompleteAfterCleanup?: (input: CustomTestHookInput) => Promise<void>
+  }
+
+  export type CustomTestHookCollection = {
+    //TJM: Note that the key should be something unique like the file path since 
+    //    there could be multiple hooks to run for a single hook name spread across different files.
+    [key: string]: CustomTestHooks
   }

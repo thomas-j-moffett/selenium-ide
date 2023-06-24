@@ -7,7 +7,7 @@
   },
 
   "include": ["src/**/*.ts"],
-  "exclude": ["**/__mocks__", "**/__tests__"],
+  "exclude": ["**/__mocks__", "**/__tests__", "**/__sample-test-hooks"],
   "references": [
     {
       "path": "../side-model"
