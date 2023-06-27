@@ -33,7 +33,8 @@ async function onTestCompleteBeforeCleanup(input) {
     console.log(`The test, ${input.test.name}, is running via LambdaTest.`);
 
     //TJM: Test out setting the name.
-    input.webDriverExec?.driver?.executeScript(`lambda-name=${input.test.name}`);
+    //     Note that, any calls to the driver should use "await".
+    await input.webDriverExec?.driver?.executeScript(`lambda-name=${input.test.name}`);
 
     //TJM: I would also report the status at this time and map it to a relevant LambdaTest status, but it's a bit more involved for this example.
   }
