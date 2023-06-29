@@ -81,7 +81,15 @@ function parseStringValue(value: string) {
 function trimSingleQuote(value: string) {
   let str = value.trim()
   if (str[0] === str[str.length - 1] && str[0] === "'") {
-    return str.slice(1, -2)
+    //TJM: Original code had "-2" for the slice index end, but that targets two characters from the end
+    //      and that means the character at the end before the closing single quote will not be extracted
+    //      so it's destroying the input and getting rid of the character before the ending single quote too.
+    //      Basically, "'some-value'"" is becoming "some-valu".
+    //
+    //      I changed it to simply be -1 so only the single quote at the end is not included in the slice but
+    //      the value in the single quotes is preserved in its entirety.
+    //
+    return str.slice(1, -1)
   }
   return str
 }
