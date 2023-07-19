@@ -1,14 +1,16 @@
 {
   "name": "selenium-side-runner-with-hooks",
-  "version": "4.0.0-alpha.51",
+  "version": "4.0.0-alpha.52",
   "private": false,
   "description": "Run Selenium IDE projects in cli",
   "repository": "https://github.com/thomas-j-moffett/selenium-ide",
   "scripts": {
     "build": "tsc",
+    "build-with-sample": "tsc && cp -r ./src/__sample-test-with-hooks ./dist/",
     "clean": "rm -rf dist tsconfig.tsbuildinfo node_modules",
     "start": "node dist/bin.js",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "debug": "npx selenium-side-runner-with-hooks --capabilities \"browser=chrome\" --filter \"Upcoming webinar\" --test-hook-files ./dist/__sample-test-with-hooks/test-hook-simple.js  -- ./dist/__sample-test-with-hooks/sample-test.side"
   },
   "bin": {
     "selenium-side-runner-with-hooks": "dist/bin.js"

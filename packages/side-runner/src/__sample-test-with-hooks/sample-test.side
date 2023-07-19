@@ -1,7 +1,7 @@
 {
   "id": "f156e0c6-1891-406f-a488-9f301663ad4d",
   "version": "2.0",
-  "name": "delinea-test-fail-test",
+  "name": "Selenium IDE Sample Test",
   "url": "https://delinea.com",
   "tests": [{
     "id": "fd4416db-8c5c-4679-a82e-a975488aaa53",
@@ -65,6 +65,140 @@
       "targets": [],
       "value": "https://delinea.com/products/secret-server"
     }]
+  }, {
+    "id": "6b0ff4cf-d89d-4cc1-92ab-adc415d5d344",
+    "name": "Try out store value command in SIDE runner with a variable in the \"target\" property",
+    "commands": [{
+      "id": "f0a2cdb8-ec0e-41e1-937e-dfc8c6a8dea0",
+      "comment": "This test works in Selenium IDE, but it's not in SIDE runner. It fails there on trying to use a variable in the \"target\" for the \"store value\" command.",
+      "command": "open",
+      "target": "https://delinea.com/resources/frost-and-sullivan-radar-report-privileged-access-management",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e8f1fe55-2bff-47a4-8fea-9b21f6555a4d",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1920x1053",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7bcb5e74-24af-4325-bb60-81eebdbc9b10",
+      "comment": "",
+      "command": "store",
+      "target": "resource_language",
+      "targets": [],
+      "value": "inputName"
+    }, {
+      "id": "f8f400d8-7f36-4e49-a27d-6fc6035664b5",
+      "comment": "",
+      "command": "storeValue",
+      "target": "name=${inputName}",
+      "targets": [],
+      "value": "resourceLangVal"
+    }, {
+      "id": "b42c3e74-a82a-4afc-b040-c1c82d5411c8",
+      "comment": "",
+      "command": "echo",
+      "target": "the value of ${inputName} is ${resourceLangVal}",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "d72653eb-d731-4338-a7c5-d0a9dfca56ed",
+    "name": "Upcoming webinar page template form hidden input fill should check that form fill for relevant hidden inputs were successful",
+    "commands": [{
+      "id": "b156db2d-a295-401e-af4a-fd8e07361271",
+      "comment": "",
+      "command": "open",
+      "target": "https://delinea.com/events/webinars/server-privileged-access-management-pam",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3e8299b8-49b4-4fbd-a535-ba90f5dc7135",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1920x1053",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "f33337bf-87f6-4ce5-b30b-bce8ac4d3198",
+      "comment": "",
+      "command": "storeJson",
+      "target": "[\"conversion_type_placeholder\", \"webinar_date\",\"webinar_date_end\",\"sfdc_campaign\",\"im_conv_prod_interest_processing__c\",\"webinar_name\"]",
+      "targets": [],
+      "value": "formInputNamesToCheck"
+    }, {
+      "id": "eb1d57d0-4c0c-4510-876d-46ed94aaa98c",
+      "comment": "",
+      "command": "forEach",
+      "target": "formInputNamesToCheck",
+      "targets": [],
+      "value": "inputName"
+    }, {
+      "id": "765ee377-ce9b-4553-867a-671dda37878f",
+      "comment": "",
+      "command": "storeValue",
+      "target": "name=${inputName}",
+      "targets": [],
+      "value": "hiddenInputVal"
+    }, {
+      "id": "4875c7d3-3db8-4520-ba3b-676841917e9a",
+      "comment": "If hidden input is non-empty, then assert so test passes.",
+      "command": "if",
+      "target": "${hiddenInputVal}.search(/\\S/) !== -1",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5f41c6d9-8fc1-4b00-bb6f-2152a966125e",
+      "comment": "",
+      "command": "echo",
+      "target": "hidden input \"${inputName}\" is not empty",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "66c717db-786b-46d8-aa4e-fe00ca85e1e7",
+      "comment": "There is no forced assert, so we make one that will always pass.",
+      "command": "assert",
+      "target": "hiddenInputVal",
+      "targets": [],
+      "value": "${hiddenInputVal}"
+    }, {
+      "id": "c13f8a1e-a73a-4f8b-994a-9cf854d24baf",
+      "comment": "Assert so test fails.",
+      "command": "else",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7e96e875-c007-4bbf-aa82-b64c7be2f6ed",
+      "comment": "",
+      "command": "echo",
+      "target": "hidden input \"${inputName}\" is empty...test failed.",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "07a4f4ab-9d7e-4fe7-b3d1-7b5afe742d97",
+      "comment": "There is no forced assert, so we make one that should always fail with a value that indicates the variable was empty.",
+      "command": "assert",
+      "target": "hiddenInputVal",
+      "targets": [],
+      "value": "[form hidden field, \"${inputName}\", should not be empty]"
+    }, {
+      "id": "9514440a-5d51-43bc-94ef-e6ee047eaa9f",
+      "comment": "",
+      "command": "end",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "486df1de-7b64-4033-b3c9-9351e0c88c71",
+      "comment": "",
+      "command": "end",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "b690deee-a14e-4eac-86fe-e806cdc3d8da",
@@ -73,6 +207,13 @@
     "parallel": true,
     "timeout": 300,
     "tests": ["fd4416db-8c5c-4679-a82e-a975488aaa53"]
+  }, {
+    "id": "034a59d9-2a2d-4a4e-9685-54251e9e8a44",
+    "name": "Store Value Interpolation Suite",
+    "persistSession": false,
+    "parallel": true,
+    "timeout": 300,
+    "tests": ["6b0ff4cf-d89d-4cc1-92ab-adc415d5d344", "d72653eb-d731-4338-a7c5-d0a9dfca56ed"]
   }],
   "urls": ["https://delinea.com/"],
   "plugins": []

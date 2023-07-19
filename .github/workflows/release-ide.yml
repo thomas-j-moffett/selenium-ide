@@ -3,14 +3,6 @@ name: 'Release IDE to GitHub'
 on:
   push:
     branches: [trunk]
-  workflow_dispatch:
-    #TJM: I also want this to simply run on "workflow_dispatch" in case I need to manually run it.
-    #   More info from docs:
-    #     https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
-    #     https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
-    #   More info on how to properly specify multiple events with config since that's not in Github docs.
-    #     https://github.com/orgs/community/discussions/25595#discussioncomment-3248415
-    #      
 
 jobs:
   release:
@@ -70,38 +62,3 @@ jobs:
           prerelease: false
           files: packages/selenium-ide/dist/Selenium*
         continue-on-error: true
-  release_custom:
-    permissions:
-      actions: read
-      checks: read
-      contents: write
-      deployments: read
-      issues: read
-      discussions: read
-      packages: read
-      pages: read
-      pull-requests: read
-      repository-projects: read
-      security-events: read
-      statuses: read
-    runs-on: macos-11
-    if: github.repository == 'thomas-j-moffett/selenium-ide'
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
-      - name: Install pnpm
-        run: npm i -g pnpm
-      - name: Install dependencies
-        run: pnpm -r i
-      - name: Install chromedriver for windows
-        run: npm_config_platform=win32 npm i
-        working-directory: packages/selenium-ide/node_modules/electron-chromedriver
-      - name: Build all JS
-        run: pnpm run build
-      - name: Publish SIDE runner package to npm
-        run: pnpm -r publish --no-git-checks --filter "./packages/side-runner" --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

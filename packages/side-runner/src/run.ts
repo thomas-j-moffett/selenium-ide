@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import glob from 'glob'
+import { glob, GlobOptionsWithFileTypesFalse } from 'glob'
 import {
   correctPluginPaths,
   getCustomCommands,
@@ -32,7 +32,6 @@ import fs from 'fs/promises'
 import path from 'path'
 import Satisfies from './versioner'
 import { Configuration, CustomTestHookCollection, CustomTestHookInput, CustomTestHooks, Project } from './types'
-import { IOptions } from 'glob'
 
 export interface HoistedThings {
   configuration: Configuration
@@ -70,24 +69,16 @@ const buildRunners = ({ configuration, logger }: HoistedThings) => {
    */
   const getCustomTestHookFiles = async (globPattern: string, cwd = '') : Promise<string[]> => {
     //TJM: I basically gave await support to the glob function by wrapping it in a Promise.
-    return new Promise((resolve, reject) => {
-      let options: IOptions = {}
-      if(cwd) {
-        options.cwd = cwd
-      }
+    let options: GlobOptionsWithFileTypesFalse = {}
+    if(cwd) {
+      options.cwd = cwd
+    }
 
-      //TJM: We want glob to give us back the full paths, otherwise, the import will not work correctly.
-      options.realpath = true
+    //TJM: We want glob to give us back the full paths, otherwise, the import will not work correctly.
+    options.absolute = true
+    options.realpath = true
 
-      glob(globPattern, options, function (err, files) {
-        if(err) {
-          reject(err)
-        }
-        else {
-          resolve(files)
-        }
-      })
-    });
+    return glob(globPattern, options)
   }
 
   const loadCustomTestHooks = async () : Promise<CustomTestHookCollection> => {
